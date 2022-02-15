@@ -1,0 +1,57 @@
+﻿@page "/"
+@using Blazorise3442.Data
+@using Blazorise.DataGrid.Configuration
+@using Blazorise.DataGrid
+@using Faker
+
+@code {
+
+        private const int ItemCount = 100000;
+    private IReadOnlyList<ListItem> Data = Array.Empty<ListItem>();
+    private readonly VirtualizeOptions VirtualizeOptions = new() { DataGridHeight = "500px" };
+    private DataGrid<ListItem> DataGrid { get; set; } = null!;
+
+    private async Task OnReadDataAsync(DataGridReadDataEventArgs<ListItem> e)
+    {
+        await Task.Delay(100);
+
+        Data = Enumerable.Range(0, e.VirtualizeCount)
+            .Select(_ => new ListItem(
+                Name.FullName(),
+                Address.UsState(),
+                Address.City()))
+            .ToArray();
+    }
+
+}
+
+<div style="overflow: scroll">
+    <DataGrid TItem="ListItem"
+              @ref="DataGrid"
+              Virtualize
+              Data="Data"
+              TotalItems="ItemCount"
+              SelectionMode="DataGridSelectionMode.Multiple"
+              ReadData="OnReadDataAsync"
+              VirtualizeOptions="VirtualizeOptions"
+              Style="height: 500px;">
+        <DataGridMultiSelectColumn TItem="ListItem"
+                                   Width="24px"/>
+        <DataGridColumn TItem="ListItem"
+                        Field="@nameof(ListItem.Name)"
+                        Caption="Name"
+                        Sortable="true"
+                        Width="240px"/>
+        <DataGridColumn TItem="ListItem"
+                        Field="@nameof(ListItem.State)"
+                        Caption="Phone Number"
+                        Sortable="true"
+                        Width="240px"/>
+        <DataGridColumn TItem="ListItem"
+                        Field="@nameof(ListItem.City)"
+                        Caption="Email"
+                        Sortable="true"
+                        Width="240px"/>
+        <DataGridColumn TItem="ListItem"/>
+    </DataGrid>
+</div>
