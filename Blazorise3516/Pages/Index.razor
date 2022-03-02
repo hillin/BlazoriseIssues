@@ -1,0 +1,81 @@
+﻿@page "/"
+@using Blazorise.DataGrid.Configuration
+@using Blazorise.DataGrid
+@using Faker
+@using Blazorise
+@using System.Linq
+@using System.Linq.Dynamic.Core
+@using Blazorise3516.Data
+@using Address = Faker.Address
+
+@code {
+
+    private const int ItemCount = 1000;
+    private static readonly IReadOnlyList<ListItem> FakeData = Enumerable.Range(0, ItemCount).Select(_ => new ListItem(
+            Name.FullName(),
+            Address.UsState(),
+            Address.City()))
+        .ToArray();
+
+    private IReadOnlyList<ListItem> Data { get; set; } = Array.Empty<ListItem>();
+
+    private readonly VirtualizeOptions VirtualizeOptions = new() { DataGridHeight = "500px" };
+    private DataGrid<ListItem> DataGrid { get; set; } = null!;
+
+    private async Task OnReadDataAsync(DataGridReadDataEventArgs<ListItem> e)
+    {
+        // uncomment this to make the sorting work
+        // await Task.Delay(100);
+
+        var query = FakeData.AsQueryable();
+
+        foreach (var column in e.Columns.OrderBy(c=>c.SortIndex))
+        {
+            switch (column.SortDirection)
+            {
+                case SortDirection.Ascending:
+                    query = query.OrderBy(column.Field);
+                    break;
+
+                case SortDirection.Descending:
+                    query = query.OrderBy(column.Field + " desc");
+                    break;
+            }
+        }
+
+        Data = query.Skip(e.VirtualizeOffset).Take(e.VirtualizeCount)
+            .ToArray();
+    }
+
+}
+
+<div style="overflow: scroll">
+    <DataGrid TItem="ListItem"
+              @ref="DataGrid"
+              Virtualize
+              Data="Data"
+              TotalItems="ItemCount"
+              SelectionMode="DataGridSelectionMode.Multiple"
+              ReadData="OnReadDataAsync"
+              VirtualizeOptions="VirtualizeOptions"
+              Style="height: 500px;">
+        <DataGridMultiSelectColumn TItem="ListItem"
+                                   Width="24px"/>
+        <DataGridColumn TItem="ListItem"
+                        Field="@nameof(ListItem.Name)"
+                        Caption="Name"
+                        Sortable="true"
+                        Width="240px"/>
+        <DataGridColumn TItem="ListItem"
+                        Field="@nameof(ListItem.State)"
+                        Caption="Phone Number"
+                        Sortable="true"
+                        Width="240px"/>
+        <DataGridColumn TItem="ListItem"
+                        Field="@nameof(ListItem.City)"
+                        Caption="Email"
+                        Sortable="true"
+                        Width="240px"/>
+        <DataGridColumn TItem="ListItem"/>
+    </DataGrid>
+</div>

@@ -10,8 +10,9 @@
 	    <PackageReference Include="Blazorise" Version="0.9.5.4" />
 	    <PackageReference Include="Blazorise.Bootstrap5" Version="0.9.5.4" />
 	    <PackageReference Include="Blazorise.DataGrid" Version="0.9.5.4" />
+	    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.5.4" />
 	    <PackageReference Include="Faker.Net" Version="2.0.154" />
-	    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.17" />
+		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.17" />
     </ItemGroup>
 
 </Project>
